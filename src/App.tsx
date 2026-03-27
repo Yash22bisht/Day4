@@ -9,7 +9,7 @@ import AddContact from './pages/AddContact'
 import PageNotFound from './pages/PageNotFound'
 import { Routes, Route } from 'react-router-dom'
 // import { NavLink } from 'react-router-dom'
-import SideBarLayout from './sideBarLayout'
+import SideBarLayout from './SideBarLayout'
 import ContactDetails from './pages/ContactDetails'
 import AddedContact from './pages/AddedContact'
 
