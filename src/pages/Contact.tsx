@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ContactCard } from '../componenets/ContactCard'
-import useDebounce from '../hooks/UseDebounce';
+// import useDebounce from '../hooks/UseDebounce';
 
 type Contact = {
     id: number;
@@ -113,7 +113,7 @@ export default function Contact() {
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
 
-    const debouncedValue = useDebounce(search,10000);
+    // const debouncedValue = useDebounce(search,10000);
 
     const  onSearchChange = (e:{ target: { value: string } }) => {
         console.log(typeof(e));
@@ -131,7 +131,7 @@ export default function Contact() {
                 <button className={`${statusFilter === "inactive" ? "bg-red-600" : "bg-gray-300"} hover:bg-red-400 px-4 py-1 rounded-md`} onClick={() => setStatusFilter("inactive")}>Inacitve</button>
             </div>
 
-            <input value={debouncedValue} onChange={onSearchChange} type="text" placeholder="Search contacts..." className='border-2 border-blue-900 px-4 py-2 w-64 rounded-md' />
+            <input value={search} onChange={onSearchChange} type="text" placeholder="Search contacts..." className='border-2 border-blue-900 px-4 py-2 w-64 rounded-md' />
 
             {/* Visible contact count */}
             <p className='text-gray-500 text-sm'>Showing {filterContacts(contacts, search, statusFilter).length} of {contacts.length} contacts</p>
