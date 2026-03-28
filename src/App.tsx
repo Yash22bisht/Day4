@@ -12,6 +12,7 @@ import { Routes, Route } from 'react-router-dom'
 import SideBarLayout from './SideBarLayout'
 import ContactDetails from './pages/ContactDetails'
 import AddedContact from './pages/AddedContact'
+import ErrorThrowing from './pages/TestError'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route element={<SideBarLayout />}>
           <Route path="/" element={<Contact />} />
+          <Route path="/error" element={<ErrorThrowing />} />
           <Route path="contacts" element={<Contact />} />
           <Route path="contacts/:id" element={<ContactDetails />} />
           <Route path="contacts/new" element={<AddContact />} />

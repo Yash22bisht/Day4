@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { ContactCard } from '../componenets/ContactCard'
-// import useDebounce from '../hooks/UseDebounce';
+import useDebounce from '../hooks/useDebounce';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { useSearchParams } from 'react-router-dom';
 
 type Contact = {
     id: number;
@@ -67,6 +69,8 @@ const contacts: Contact[] = [
     }
 ];
 
+console.table(contacts);
+
 // 2. Create ContactList that takes Contact[] and renders ContactCards
 //  - .map() with key, "No contacts found" if empty
 const contactList = (contact: Contact[]) => {
@@ -93,7 +97,11 @@ const contactList = (contact: Contact[]) => {
 // 5. Add status filter buttons (All / Active / Inactive)
 
 const filterContacts = (contacts: Contact[], search: string, statusFilter: "all" | "active" | "inactive"): Contact[] => {
-    return contacts.filter((contact) => {
+    console.group("Filtereing");
+    console.log("search",search);
+    console.log('statusFilter', statusFilter);
+
+    const filteredContacts = contacts.filter((contact) => {
         const matchesStatus = statusFilter === "all" || contact.status === statusFilter;
 
         const matchesSearch =
@@ -103,22 +111,37 @@ const filterContacts = (contacts: Contact[], search: string, statusFilter: "all"
             (contact.email && contact.email.toLowerCase().includes(search.toLowerCase())) ||
             (contact.phone && contact.phone.includes(search));
 
+
         return matchesStatus && matchesSearch;
     });
+    console.log("filteredContacts", filteredContacts);
+    console.groupEnd();
+    return filteredContacts;
 };
 
 
 
 export default function Contact() {
-    const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+    // const [search, setSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useLocalStorage<"all" | "active" | "inactive">("Status","all");
+    const [searchParam,setSearchParam] = useSearchParams({search:""});
 
-    // const debouncedValue = useDebounce(search,10000);
+    const debouncedValue = useDebounce(searchParam.get("search")|| "", 300);
 
-    const  onSearchChange = (e:{ target: { value: string } }) => {
-        console.log(typeof(e));
-        setSearch(e.target.value);
+    // useRef for autofocus on search 
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+        document.title = "Contact List";
+    }, [])
+
+    const onSearchChange = (e: { target: { value: string } }) => {
+        console.log(typeof (e));
+        // setSearch(e.target.value);
+        setSearchParam({"search": e.target.value});
     }
+    const filterContactList = filterContacts(contacts, debouncedValue, statusFilter);
 
     return (
         <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center gap-6">
@@ -131,14 +154,14 @@ export default function Contact() {
                 <button className={`${statusFilter === "inactive" ? "bg-red-600" : "bg-gray-300"} hover:bg-red-400 px-4 py-1 rounded-md`} onClick={() => setStatusFilter("inactive")}>Inacitve</button>
             </div>
 
-            <input value={search} onChange={onSearchChange} type="text" placeholder="Search contacts..." className='border-2 border-blue-900 px-4 py-2 w-64 rounded-md' />
+            <input ref={inputRef} value={searchParam.get("search") || ""} onChange={onSearchChange} type="text" placeholder="Search contacts..." className='border-2 border-blue-900 px-4 py-2 w-64 rounded-md' />
 
             {/* Visible contact count */}
-            <p className='text-gray-500 text-sm'>Showing {filterContacts(contacts, search, statusFilter).length} of {contacts.length} contacts</p>
+            <p className='text-gray-500 text-sm'>Showing {filterContactList.length} of {contacts.length} contacts</p>
 
             {/* responsiveness 1 col mobile, 2 col md:, 3 col lg */}
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl">
-                {contactList(filterContacts(contacts, search, statusFilter))}
+                {contactList(filterContactList)}
             </div>
             ;
         </div>

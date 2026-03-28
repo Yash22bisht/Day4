@@ -1,7 +1,7 @@
 // Card for showing details of a card 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams } from 'react-router-dom';
 
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 type Contact = {
     id: number;
@@ -78,6 +78,10 @@ export default function ContactDetails() {
     const { id } = useParams<{ id: string }>();
     const contactId = id ? parseInt(id, 10) : NaN;
     const contact = searchById(contacts, contactId);
+
+    useEffect(() => {
+        document.title = "Contact";
+    }, [])
 
     if (!contact) {
         return <div className="bg-white p-6 rounded-lg shadow-md">Contact not found</div>;
